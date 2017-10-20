@@ -1,0 +1,36 @@
+from flask import Flask, render_template
+from flask_bootstrap import Bootstrap
+from flask_sqlalchemy import SQLAlchemy
+from config import config_class
+from flask_login import LoginManager
+
+
+bootstrap = Bootstrap()
+
+db = SQLAlchemy()
+
+login_manager = LoginManager()
+login_manager.session_protection = 'basic'
+login_manager.login_view = 'auth.login'
+
+
+from app.main import views, errors
+from app.auth import views, errors
+
+
+def create_app(config_name):
+    app = Flask(__name__)
+    # from object? no! from class!
+    app.config.from_object(config_class[config_name])
+
+    bootstrap.init_app(app)
+    db.init_app(app)
+    login_manager.init_app(app)
+
+    # register blue print
+    from .main import main_blueprint
+    app.register_blueprint(main_blueprint)
+    from .auth import auth_blueprint
+    app.register_blueprint(auth_blueprint, url_prefix='/auth')
+
+    return app

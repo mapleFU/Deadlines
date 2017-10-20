@@ -105,3 +105,11 @@ venv.bak/
 
 sql
 *.sh
+.idea/Deadlines.iml
+.idea/dictionaries/
+.idea/fileTemplates/
+.idea/inspectionProfiles/
+.idea/misc.xml
+.idea/modules.xml
+.idea/workspace.xml
+

@@ -1,0 +1,27 @@
+{% extends "base1.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{# 不需要写相对路径？？？ #}
+{% block content %}
+    <div class="container">
+        {{ wtf.quick_form(form) }}
+    </div>
+    {% block register %}
+        <div class="container">
+            <p>
+                New user?<a href="{{ url_for('auth.register') }}"> Click here to register </a>
+            </p>
+        </div>
+    {% endblock %}
+
+    {% block flash %}
+        <div class="container">
+            {% for foo in get_flashed_messages() %}
+                <div class="alert-warning">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ foo }}
+                </div>
+             {% endfor %}
+        </div>
+    {% endblock %}
+
+{% endblock %}
