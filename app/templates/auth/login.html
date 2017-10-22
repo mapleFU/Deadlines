@@ -2,13 +2,21 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {# 不需要写相对路径？？？ #}
 {% block content %}
-    <div class="container">
-        {{ wtf.quick_form(form) }}
+    <br />
+    <br />
+    <br />
+    <div class="container-fluid">
+        <div class="form-group">
+            {{ wtf.quick_form(form) }}
+        </div>
     </div>
+
     {% block register %}
-        <div class="container">
+        <div class="container-fluid">
             <p>
-                New user?<a href="{{ url_for('auth.register') }}"> Click here to register </a>
+                <div class="glyphicon-font">
+                    New user?<a href="{{ url_for('auth.register') }}"> Click here to register </a>
+                </div>
             </p>
         </div>
     {% endblock %}

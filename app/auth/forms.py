@@ -2,6 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import SubmitField, StringField, BooleanField, PasswordField
 from wtforms.validators import DataRequired, Length, Email, Regexp, EqualTo
 from wtforms import ValidationError
+from ..model import User
 
 
 class LoginForm(FlaskForm):
@@ -9,7 +10,7 @@ class LoginForm(FlaskForm):
     登陆的表单，需要输入email和password字段
     """
     email = StringField('You email', validators=[Email(), Length(1, 64), DataRequired()])
-    password = StringField('secret code', validators=[DataRequired(), Length(1, 64)])
+    password = PasswordField('password', validators=[DataRequired(), Length(1, 64)])
     remember_me = BooleanField('remember me', default=False)
     submit = SubmitField('log in')
 

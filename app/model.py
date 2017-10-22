@@ -8,11 +8,23 @@ class User(db.Model, UserMixin):
     申请创建的用户对象，拥有创建-删改任务的职责
     可以拥有头像 需要登录
     """
-    __tablename__ = 'user'
+    __tablename__ = 'Users'
 
     username = db.Column(db.String(64), unique=True, index=True)
     id = db.Column(db.INTEGER, primary_key=True)
     password_hash = db.Column(db.String(128))
+    email = db.Column(db.String(64), unique=True, index=True)
+    task_id = db.Column(db.INTEGER, db.ForeignKey('Tasks.id'))
+
+    def __init__(self, username, password, email):
+        self.email = email
+        self.username = username
+        self.password = password
+    # tasks = db.relationship(
+    #     'tasks',
+    #     backref='user',
+    #     lazy='dynamic',
+    # )
 
     @property
     def password(self):
@@ -24,7 +36,8 @@ class User(db.Model, UserMixin):
         self.password_hash = generate_password_hash(password_value)
 
     def verify_password(self, password):
-        raise check_password_hash(self.password_hash, password)
+        print(password)
+        return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
         return '<User {}>'.format(
@@ -36,14 +49,27 @@ class AnonymousUser(AnonymousUserMixin):
     pass
 
 
-class Tasks(db.Model):
+class Task(db.Model):
     """
     需要处理的任务对象
     """
-    __tablename__ = 'tasks'
+    __tablename__ = 'Tasks'
 
     id = db.Column(db.INTEGER, primary_key=True)
     endtime = db.Column(db.DateTime)
     context = db.Column(db.Text)
-    users = db.relationship('User', backref='task')
+
+    # not user
+    user = db.relationship('User', backref='tasks', lazy='dynamic')
+
+    # lazy = 'dynamic', figure out why
+    # 第一个表示User类的tablename -> user, 所以并非User
+
+    def __repr__(self):
+        return '<task: {}>'.format(
+            self.id
+        )
+
+
+
 

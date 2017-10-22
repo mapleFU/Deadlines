@@ -16,16 +16,22 @@ class Config:
 
 class DevConfig(Config):
     DEBUG = True
+    # SQLALCHEMY_DATABASE_URI = os.environ.get('DEV_BASE_URL') or \
+    #                           "sqlite:///" + os.path.join(basedir, 'data-dev.sqlite')
     SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue_dev'.format(mysql_secret)
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
+    SQLALCHEMY_COMMIT_ON_TEAR_DOWN = True
 
 
 class ProductionConfig(Config):
     SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue'.format(mysql_secret)
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class TestConfig(Config):
     TESTING = True
     SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue_test'.format(mysql_secret)
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 # origin: config_class
