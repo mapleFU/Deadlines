@@ -27,6 +27,12 @@ def create_app(config_name):
     db.init_app(app)
     login_manager.init_app(app)
 
+    from app.model import User
+
+    # TODO: know how to adjust it
+    @login_manager.user_loader
+    def load_user(user_id):
+        return User.query.filter_by(id=user_id).first()
     # register blue print
     from .main import main_blueprint
     app.register_blueprint(main_blueprint)
