@@ -18,10 +18,11 @@ class User(db.Model, UserMixin):
     task_id = db.Column(db.INTEGER, db.ForeignKey('Tasks.id'))
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
 
-    def __init__(self, username, password, email):
-        self.email = email
-        self.username = username
-        self.password = password
+    # def __init__(self, username, password, email):
+    #     self.email = email
+    #     self.username = username
+    #     self.password = password
+
     # tasks = db.relationship(
     #     'tasks',
     #     backref='user',
@@ -42,9 +43,7 @@ class User(db.Model, UserMixin):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return '<User {}>'.format(
-            self.username
-        )
+        return '<User {}>'.format(self.username)
 
 
 class AnonymousUser(AnonymousUserMixin):

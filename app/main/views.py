@@ -31,7 +31,9 @@ def user(username):
     """
     :return: 用户资料页面
     """
-    usr = User.query.filter(username=username).first()
+    # print('username: {}'.format(username))
+    # print(User)
+    usr = User.query.filter_by(username=username).first()
     if usr is None:
         # 搜索的用户不存在，触发404 ERROR
         abort(404)
@@ -41,10 +43,11 @@ def user(username):
 @main_blueprint.route('/user/edit/<username>')
 @login_required
 def user_edit(username):
-    pass
+    return 'Hello, ' + username
 
 
 @main_blueprint.route('/task/edit')
 @login_required
 def task_edit():
     pass
+

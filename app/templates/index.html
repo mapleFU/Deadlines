@@ -1,1 +1,11 @@
 {% extends 'DeadBlueBase.html' %}
+
+{% block content_name %}
+    <p>Hello,
+    {% if current_user.is_authenticated %}
+        {{ current_user.username }}
+    {% else %}
+        Stranger
+    {% endif %}
+    </p>
+{% endblock %}

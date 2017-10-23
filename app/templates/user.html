@@ -1,13 +1,27 @@
-{% extends 'DeadBlueDefault.html' %}
+{% extends 'DeadBlueBase.html' %}
 {% block content_name %}
     User Information
 {% endblock %}
 
+{% block navbar_right %}
+    {{ super() }}
+
+    {% if current_user == user %}
+        <li class="align-right">
+            <a href="{{ url_for('main.user_edit', username=user.username) }}">Edit</a>
+        </li>
+    {% endif %}
+{% endblock %}
+
 {% block content_text %}
-    <dl class="dl-horizontal">
+    <dl class="dl-horizontal centered">
         <dt>nickname</dt>
         <dd>{{ user.username }}</dd>
 
-        <dt></dt>
+        <dt>email</dt>
+        <dd>{{ user.email }}</dd>
+
+        <dt>register</dt>
+        <dd>{{ user.member_since }}</dd>
     </dl>
 {% endblock %}

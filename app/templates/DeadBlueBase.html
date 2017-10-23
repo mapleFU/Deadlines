@@ -10,6 +10,9 @@
 {% block navbar_right %}
     {% if current_user.is_authenticated %}
         <li class="align-right"><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+        <li class="align-right">
+            <a href="{{ url_for('main.user', username=current_user.username) }}">Profile</a>
+        </li>
     {% else %}
         <li class="align-right"><a href="{{ url_for('auth.login') }}">Login</a></li>
         <li class="align-right"><a href="{{ url_for('auth.register') }}">Register</a></li>
