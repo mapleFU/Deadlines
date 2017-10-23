@@ -1,0 +1,35 @@
+{% extends 'base1.html' %}
+{% block title %}
+    <title>DeadBlue for your ddl</title>
+{% endblock %}
+
+{% block navbar_list %}
+    <li><a href="{{ url_for('main.task') }}">MyTasks</a></li>
+{% endblock %}
+
+{% block navbar_right %}
+    {% if current_user.is_authenticated %}
+        <li class="align-right"><a href="{{ url_for('auth.logout') }}">Logout</a></li>
+    {% else %}
+        <li class="align-right"><a href="{{ url_for('auth.login') }}">Login</a></li>
+        <li class="align-right"><a href="{{ url_for('auth.register') }}">Register</a></li>
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    {% block content_start %}
+        <h1 class="text-center">{% block content_name %}Edit Your Contents{% endblock %}</h1>
+    {% endblock %}
+
+    {% block content_text %}
+{#        正文#}
+        <div class="starter-template">
+    {#        <div class="glyphicon-font">#}
+            <h4 head="lead">
+                This is a new deadblue page.<br />
+                Go on and programming! <br />
+            </h4>
+    {#        </div>#}
+        </div>
+    {% endblock %}
+{% endblock %}

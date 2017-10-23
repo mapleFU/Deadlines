@@ -1,18 +1,18 @@
-{% extends "base1.html" %}
+{% extends "DeadBlueBase.html" %}
 {% import "bootstrap/wtf.html" as wtf %}
 {# 不需要写相对路径？？？ #}
 {% block content %}
-    <br />
-    <br />
-    <br />
-    <div class="container-fluid">
+    {% block content_start %}
+        <h1 class="text-center">{% block content_name %}Login {% endblock %}</h1>
+    {% endblock %}
+    <div class="container">
         <div class="form-group">
             {{ wtf.quick_form(form) }}
         </div>
     </div>
 
     {% block register %}
-        <div class="container-fluid">
+        <div class="container">
             <p>
                 <div class="glyphicon-font">
                     New user?<a href="{{ url_for('auth.register') }}"> Click here to register </a>
@@ -22,11 +22,11 @@
     {% endblock %}
 
     {% block flash %}
-        <div class="container">
+        <div class="container-fluid">
             {% for foo in get_flashed_messages() %}
                 <div class="alert-warning">
                     <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    {{ foo }}
+                    <div class="glyphicon-font">{{ foo }} </div>
                 </div>
              {% endfor %}
         </div>

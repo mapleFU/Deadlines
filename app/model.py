@@ -1,6 +1,7 @@
 from . import db
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask_moment import datetime
 
 
 class User(db.Model, UserMixin):
@@ -15,6 +16,7 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(128))
     email = db.Column(db.String(64), unique=True, index=True)
     task_id = db.Column(db.INTEGER, db.ForeignKey('Tasks.id'))
+    member_since = db.Column(db.DateTime(), default=datetime.utcnow)
 
     def __init__(self, username, password, email):
         self.email = email
@@ -64,6 +66,13 @@ class Task(db.Model):
 
     # lazy = 'dynamic', figure out why
     # 第一个表示User类的tablename -> user, 所以并非User
+
+    # TODO: FINISH THIS
+    def count_remains(self):
+        """
+        :return: 计算出endtime距离调用函数的时候相距的时间
+        """
+        pass
 
     def __repr__(self):
         return '<task: {}>'.format(
