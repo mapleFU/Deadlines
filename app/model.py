@@ -12,16 +12,19 @@ class User(db.Model, UserMixin):
     __tablename__ = 'Users'
 
     username = db.Column(db.String(64), unique=True, index=True)
-    id = db.Column(db.INTEGER, primary_key=True)
-    password_hash = db.Column(db.String(128))
     email = db.Column(db.String(64), unique=True, index=True)
-    task_id = db.Column(db.INTEGER, db.ForeignKey('Tasks.id'))
+    id = db.Column(db.INTEGER, primary_key=True)
+
+    password_hash = db.Column(db.String(128))
+    # task_id = db.Column(db.INTEGER, db.ForeignKey('Tasks.id'))
+    tasks = db.relationship('Task', backref='author', lazy='dynamic')
+    # task_id = db.relationship(db.Integer, db.ForeignKey('task.id'))
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
 
-    # def __init__(self, username, password, email):
-    #     self.email = email
-    #     self.username = username
-    #     self.password = password
+    def __init__(self, username, password, email):
+        self.email = email
+        self.username = username
+        self.password = password
 
     # tasks = db.relationship(
     #     'tasks',
@@ -46,8 +49,8 @@ class User(db.Model, UserMixin):
         return '<User {}>'.format(self.username)
 
 
-class AnonymousUser(AnonymousUserMixin):
-    pass
+# class AnonymousUser(AnonymousUserMixin):
+#     pass
 
 
 class Task(db.Model):
@@ -57,12 +60,14 @@ class Task(db.Model):
     __tablename__ = 'Tasks'
 
     id = db.Column(db.INTEGER, primary_key=True)
-    endtime = db.Column(db.DateTime)
-    context = db.Column(db.Text)
 
+    ending = db.Column(db.DateTime)
+    content = db.Column(db.Text)
+    tag = db.Column(db.String(40), index=True) # 任务标签
     # not user
-    user = db.relationship('User', backref='tasks', lazy='dynamic')
-
+    # user = db.relationship('User', backref='tasks', lazy='dynamic')
+    user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
+    # mother_fuck = db.Column(db.String(64))
     # lazy = 'dynamic', figure out why
     # 第一个表示User类的tablename -> user, 所以并非User
 
@@ -74,8 +79,10 @@ class Task(db.Model):
         pass
 
     def __repr__(self):
-        return '<task: {}>'.format(
-            self.id
+        return '<task: User:{}, text:{}, end:{}>'.format(
+            self.user_id,
+            self.content[:10],
+            self.ending
         )
 
 

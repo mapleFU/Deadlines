@@ -14,10 +14,6 @@ login_manager.session_protection = 'basic'
 login_manager.login_view = 'auth.login'
 
 
-from app.main import views, errors
-from app.auth import views, errors
-
-
 def create_app(config_name):
     app = Flask(__name__)
     # from object? no! from class!

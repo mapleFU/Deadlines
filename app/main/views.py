@@ -1,7 +1,9 @@
 from . import main_blueprint
-from flask import render_template, abort
+from flask import render_template, abort, redirect, url_for
 from flask_login import login_required
-from app.model import User
+from app.model import User, Task
+from .forms import TaskForm
+from .. import db
 
 
 @main_blueprint.route('/base')
@@ -46,8 +48,17 @@ def user_edit(username):
     return 'Hello, ' + username
 
 
-@main_blueprint.route('/task/edit')
+@main_blueprint.route('/task/edit', methods=['GET', 'POST'])
 @login_required
 def task_edit():
-    pass
-
+    form = TaskForm()
+    if form.validate_on_submit():
+        task = Task(
+            context=form.task_content.data,
+            ending=form.ending_time.data
+        )
+        db.session.add(task)
+        db.session.commit()
+        return redirect(url_for('main.index'))
+    # Todo Edit it for it self
+    return render_template('auth/register.html', form=form)
