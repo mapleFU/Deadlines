@@ -6,6 +6,7 @@ from app.model import User, Task
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager, Shell
 from flask_moment import Moment
+from flask_admin import Admin
 
 
 app = create_app(os.getenv('FLASK_CONFIG') or 'dev')
@@ -14,6 +15,7 @@ app.logger.setLevel('INFO')
 manager = Manager(app)
 migrate = Migrate(app, db)
 moment = Moment(app)
+admin = Admin(app, name='dead_list', template_mode='bootstrap3')
 
 
 def make_shell_context():

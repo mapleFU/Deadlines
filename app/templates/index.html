@@ -1,4 +1,6 @@
+{% import "bootstrap/wtf.html" as wtf %}
 {% extends 'DeadBlueBase.html' %}
+
 
 {% block content_name %}
     <p>Hello,
@@ -8,4 +10,29 @@
         Stranger
     {% endif %}
     </p>
+{% endblock %}
+
+{% block content %}
+
+    <div class="center-block">
+        {% if current_user.is_authenticated %}
+            {% if form %}
+                {{ wtf.quick_form(form) }}
+            {% endif %}
+        {% endif %}
+    </div>
+
+    <ul class="tasks">
+        {% if tsks %}
+            {% for task in tsks %}
+                <div class="task-date">
+                    ending: {{ task.ending }}
+                </div>
+
+                <div class="task-author">
+                    author: <a href="{{ url_for('main.user', username=task.author.username) }}">{{ task.author }}</a>
+                </div>
+            {% endfor %}
+        {% endif %}
+    </ul>
 {% endblock %}

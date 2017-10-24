@@ -1,6 +1,6 @@
 from . import main_blueprint
 from flask import render_template, abort, redirect, url_for
-from flask_login import login_required
+from flask_login import login_required, current_user
 from app.model import User, Task
 from .forms import TaskForm
 from .. import db
@@ -11,11 +11,25 @@ def base2():
     return render_template('base.html')
 
 
-@main_blueprint.route('/')
-@main_blueprint.route('/DeadBlue')
-@main_blueprint.route('/deadblue')
+@main_blueprint.route('/', methods=['GET', 'POST'])
+@main_blueprint.route('/DeadBlue', methods=['GET', 'POST'])
+@main_blueprint.route('/deadblue', methods=['GET', 'POST'])
 def index():
-    return render_template('index.html')
+    form = TaskForm()
+    if current_user.is_authenticated and form.validate_on_submit():
+        tsk = Task(
+            content=form.task_content.data,
+            ending=form.ending_time.data,
+            author=current_user
+        )
+
+        db.session.add(tsk)
+        db.session.commit()
+        # maybe i should clear it?
+        return redirect(url_for('.index'))
+    tasks = Task.query.order_by(Task.ending).all()
+    print(tasks)
+    return render_template('index.html', tsks=tasks, form=form)
 
 
 @main_blueprint.route('/task')
