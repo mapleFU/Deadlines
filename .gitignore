@@ -113,3 +113,5 @@ sql
 .idea/modules.xml
 .idea/workspace.xml
 .idea
+
+tests/tesk.py

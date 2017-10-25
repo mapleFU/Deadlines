@@ -28,7 +28,7 @@ def index():
         # maybe i should clear it?
         return redirect(url_for('.index'))
     tasks = Task.query.order_by(Task.ending).all()
-    print(tasks)
+    # print(tasks)
     return render_template('index.html', tsks=tasks, form=form)
 
 

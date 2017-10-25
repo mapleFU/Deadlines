@@ -1,7 +1,9 @@
+# 可以考虑把generate_fake变成一个函数
 from . import db
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_moment import datetime
+from datetime import date
 
 
 class User(db.Model, UserMixin):
@@ -48,6 +50,29 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return '<User {}>'.format(self.username)
 
+    @staticmethod
+    def generate_fake(count=100):
+        """
+        在开发和测试模式下使用
+        利用forgery_py生成100条测试字段
+        """
+        from sqlalchemy.exc import IntegrityError
+        from random import seed
+        import forgery_py
+
+        seed()
+        for i in range(count):
+            usr = User(
+                email=forgery_py.internet.email_address(),
+                username=forgery_py.internet.user_name(True),
+                password=forgery_py.lorem_ipsum.word(),
+            )
+            db.session.add(usr)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+
 
 # class AnonymousUser(AnonymousUserMixin):
 #     pass
@@ -71,12 +96,12 @@ class Task(db.Model):
     # lazy = 'dynamic', figure out why
     # 第一个表示User类的tablename -> user, 所以并非User
 
-    # TODO: FINISH THIS
+    # TODO: FINISH THIS AND TEST THIS
     def count_remains(self):
         """
         :return: 计算出endtime距离调用函数的时候相距的时间
         """
-        pass
+        return datetime.utcnow() - self.ending
 
     def __repr__(self):
         return '<task: User:{}, text:{}, end:{}>'.format(
@@ -85,6 +110,49 @@ class Task(db.Model):
             self.ending
         )
 
+    @staticmethod
+    def date_range(start_date, end_date, increment, period):
+        result = []
+        nxt = start_date
+        delta = relativedelta(**{period: increment})
+        while nxt <= end_date:
+            result.append(nxt)
+            nxt += delta
+        return result
 
+    @staticmethod
+    def generate_fake(count=100):
+        """
+        在开发和测试模式下使用
+        利用forgery_py生成100条测试字段
+        """
+        from sqlalchemy.exc import IntegrityError
+        from random import seed, randint
+        import forgery_py
+
+        from dateutil.relativedelta import relativedelta
+        user_num = User.query.count()
+        seed()
+        start_date = datetime.now()
+        end_date = start_date + relativedelta(days=1)
+        end_date = end_date.replace(hour=19, minute=0, second=0, microsecond=0)
+        print(type(end_date))
+
+        for i in range(count):
+            u = User.query.offset(randint(0, user_num-1)).first()
+            tsk = Task(
+                content=forgery_py.lorem_ipsum.sentence(),
+                author=u,
+                ending=start_date
+            )
+            # print(tsk)
+            db.session.add(tsk)
+            try:
+                db.session.commit()
+            except IntegrityError:
+                db.session.rollback()
+
+        # print(datetime.now())
+        # print(type(datetime.now()))
 
 
