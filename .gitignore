@@ -112,7 +112,7 @@ sql
 .idea/misc.xml
 .idea/modules.xml
 .idea/workspace.xml
-.idea
+.idea/
 
 tests/tesk.py
 *.env

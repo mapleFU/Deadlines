@@ -12,11 +12,12 @@ class Message(db.Model):
     """
     __tablename__ = 'messages'
     # 站内信发送者
-    sender = db.relationship('User', back_populates="sent_message")
-    # 站内信接受者
-    receiver = db.relationship('User', back_populates="receiver_message")
+
     sender_id = db.Column(db.INTEGER, db.ForeignKey('users.id'), primary_key=True)
     receiver_id = db.Column(db.INTEGER, db.ForeignKey('users.id'), primary_key=True)
+    sender = db.relationship('User', back_populates="sent_messages", foreign_keys=[sender_id])
+    # 站内信接受者
+    receiver = db.relationship('User', back_populates="recv_messages", foreign_keys=[receiver_id])
     content = db.Column(db.Text)
     sent = db.Column(db.DateTime(), default=datetime.utcnow)
 
@@ -41,10 +42,12 @@ class User(db.Model, UserMixin):
     icon_uploaded = db.Column(db.Boolean(), default=False)
     # 发送的站内信
     sent_messages = db.relationship('Message', back_populates='sender',
-                                    order_by='Message.sent', foreign_keys=[Message.sender_id])
+                                    order_by='Message.sent', foreign_keys=[Message.sender_id],
+                                    lazy='dynamic')
     # 接受的站内信
     recv_messages = db.relationship('Message', back_populates='receiver',
-                                    order_by='Message.sent', foreign_keys=[Message.receiver_id])
+                                    order_by='Message.sent', foreign_keys=[Message.receiver_id],
+                                    lazy='dynamic')
 
     def __init__(self, username, password, email):
         self.email = email
