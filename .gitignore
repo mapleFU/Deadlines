@@ -116,3 +116,5 @@ sql
 
 tests/tesk.py
 *.env
+
+instance/*

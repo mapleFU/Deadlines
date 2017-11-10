@@ -2,7 +2,7 @@ from . import main_blueprint
 from flask import render_template, abort, redirect, url_for, request
 from flask_login import login_required, current_user
 from app.model import User, Task
-from .forms import TaskForm
+from .forms import *
 from .. import db
 
 
@@ -62,10 +62,24 @@ def user(username):
     return render_template('user.html', user=usr)
 
 
-@main_blueprint.route('/user/edit/<username>')
+@main_blueprint.route('/user/edit/<username>', methods=['GET', 'POST'])
 @login_required
 def user_edit(username):
-    return 'Hello, ' + username
+    if current_user.username != username:
+        abort(403)
+    edit_form = ProfileEditForm()
+    if edit_form.validate_on_submit():
+        usr = User.query.filter_by(username=username).first()
+        if usr is None:
+            abort(404)
+        username = edit_form.username.data
+        usr.username = username
+        db.session.add(usr)
+        db.session.commit()
+
+    edit_form.username.data = username
+
+    return render_template('auth/register.html', form=edit_form)
 
 
 @main_blueprint.route('/task/edit', methods=['GET', 'POST'])

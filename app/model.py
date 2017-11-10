@@ -22,6 +22,9 @@ class User(db.Model, UserMixin):
     tasks = db.relationship('Task', backref='author', lazy='dynamic')
     # task_id = db.relationship(db.Integer, db.ForeignKey('task.id'))
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
+    # 是否上传头像
+    icon_uploaded = db.Column(db.Boolean(), default=False)
+    friends = db.Column(db.INTEGER)
 
     def __init__(self, username, password, email):
         self.email = email

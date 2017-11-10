@@ -18,6 +18,8 @@ def create_app(config_name):
     app = Flask(__name__)
     # from object? no! from class!
     app.config.from_object(config_class[config_name])
+    # 从instance中配置
+    app.config.from_pyfile('../instance/config.py')
 
     bootstrap.init_app(app)
     db.init_app(app)
@@ -34,5 +36,6 @@ def create_app(config_name):
     app.register_blueprint(main_blueprint)
     from .auth import auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    app.logger.setLevel('INFO')
 
     return app

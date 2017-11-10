@@ -7,7 +7,7 @@ mysql_secret = os.environ.get('SQLCODE')
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'fuck you leather man'
-    SQLALCHEMY_COMMIT_ON_TEARDOWN = True
+    COMMIT_ON_TEARDOWN = True
     # SQLALCHEMY_TRACK_MODIFICATIONS = False
     # SQLALCHEMY_COMMIT_ON_TEAR_DOWN = True
     SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue'.format(mysql_secret)
@@ -21,7 +21,7 @@ class DevConfig(Config):
     #                           "sqlite:///" + os.path.join(basedir, 'data-dev.sqlite')
     SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue_dev'.format(mysql_secret)
     # SQLALCHEMY_TRACK_MODIFICATIONS = True
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_COMMIT_ON_TEAR_DOWN = True
 
 
