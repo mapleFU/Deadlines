@@ -11,7 +11,7 @@ class User(db.Model, UserMixin):
     申请创建的用户对象，拥有创建-删改任务的职责
     可以拥有头像 需要登录
     """
-    __tablename__ = 'Users'
+    __tablename__ = 'users'
 
     username = db.Column(db.String(64), unique=True, index=True)
     email = db.Column(db.String(64), unique=True, index=True)
@@ -24,7 +24,6 @@ class User(db.Model, UserMixin):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     # 是否上传头像
     icon_uploaded = db.Column(db.Boolean(), default=False)
-    friends = db.Column(db.INTEGER)
 
     def __init__(self, username, password, email):
         self.email = email
@@ -85,7 +84,7 @@ class Task(db.Model):
     """
     需要处理的任务对象
     """
-    __tablename__ = 'Tasks'
+    __tablename__ = 'tasks'
 
     id = db.Column(db.INTEGER, primary_key=True)
 
@@ -94,7 +93,7 @@ class Task(db.Model):
     tag = db.Column(db.String(40), index=True) # 任务标签
     # not user
     # user = db.relationship('User', backref='tasks', lazy='dynamic')
-    user_id = db.Column(db.Integer, db.ForeignKey('Users.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # mother_fuck = db.Column(db.String(64))
     # lazy = 'dynamic', figure out why
     # 第一个表示User类的tablename -> user, 所以并非User
@@ -139,7 +138,6 @@ class Task(db.Model):
         start_date = datetime.now()
         end_date = start_date + relativedelta(days=1)
         end_date = end_date.replace(hour=19, minute=0, second=0, microsecond=0)
-        print(type(end_date))
 
         for i in range(count):
             u = User.query.offset(randint(0, user_num-1)).first()
