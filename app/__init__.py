@@ -38,6 +38,7 @@ def create_app(config_name):
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
     app.logger.setLevel('INFO')
 
+    # 把这个放到了最后
     # TODO: know how to adjust it
     @login_manager.user_loader
     def load_user(user_id):

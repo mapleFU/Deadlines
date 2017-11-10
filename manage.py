@@ -23,15 +23,8 @@ def make_shell_context():
     return dict(app=app, db=db, User=User, Task=Task)
 
 
-# print(os.getenv('FLASK_CONFIG') or 'dev')
 manager.add_command('shell', Shell(make_context=make_shell_context))
 manager.add_command('db', MigrateCommand)
 
 if __name__ == '__main__':
-    # app.run()
-    # print(app.config['SQLCODE'])
-    # try:
-    # print(app.config['FLASK_CONFIG'])
     manager.run()
-    # except Exception:
-    #     print('嘿嘿嘿')

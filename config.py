@@ -8,6 +8,7 @@ mysql_secret = os.environ.get('SQLCODE')
 
 class Config:
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'fuck you leather man'
+    # 把COMMIT_ON_TEAR_DOWN 注释掉
     # COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_COMMIT_ON_TEAR_DOWN = True
