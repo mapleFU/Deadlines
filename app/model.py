@@ -6,6 +6,21 @@ from flask_moment import datetime
 from datetime import date
 
 
+class Message(db.Model):
+    """
+    站内信
+    """
+    __tablename__ = 'messages'
+    # 站内信发送者
+    sender = db.relationship('User', back_populates="sent_message")
+    # 站内信接受者
+    receiver = db.relationship('User', back_populates="receiver_message")
+    sender_id = db.Column(db.INTEGER, db.ForeignKey('users.id'), primary_key=True)
+    receiver_id = db.Column(db.INTEGER, db.ForeignKey('users.id'), primary_key=True)
+    content = db.Column(db.Text)
+    sent = db.Column(db.DateTime(), default=datetime.utcnow)
+
+
 class User(db.Model, UserMixin):
     """
     申请创建的用户对象，拥有创建-删改任务的职责
@@ -24,6 +39,12 @@ class User(db.Model, UserMixin):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     # 是否上传头像
     icon_uploaded = db.Column(db.Boolean(), default=False)
+    # 发送的站内信
+    sent_messages = db.relationship('Message', back_populates='sender',
+                                    order_by='Message.sent', foreign_keys=[Message.sender_id])
+    # 接受的站内信
+    recv_messages = db.relationship('Message', back_populates='receiver',
+                                    order_by='Message.sent', foreign_keys=[Message.receiver_id])
 
     def __init__(self, username, password, email):
         self.email = email
@@ -74,10 +95,6 @@ class User(db.Model, UserMixin):
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
-
-
-# class AnonymousUser(AnonymousUserMixin):
-#     pass
 
 
 class Task(db.Model):
@@ -146,7 +163,6 @@ class Task(db.Model):
                 author=u,
                 ending=start_date
             )
-            # print(tsk)
             db.session.add(tsk)
             try:
                 db.session.commit()
