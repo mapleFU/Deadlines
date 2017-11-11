@@ -46,3 +46,4 @@ class IconForm(FlaskForm):
         FileRequired(),
         FileAllowed(images, 'Images only')
     ])
+    submit = SubmitField('Update icon')

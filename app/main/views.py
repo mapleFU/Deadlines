@@ -1,5 +1,5 @@
 from . import main_blueprint
-from flask import render_template, abort, redirect, url_for, request, flash
+from flask import render_template, abort, redirect, url_for, request, flash, current_app
 from flask_login import login_required, current_user
 from app.model import User, Task
 from .forms import *
@@ -71,6 +71,9 @@ def user_edit(username):
     pwd_form = PasswordEditForm()
     icon_form = IconForm()
 
+    # 为什么要两个.. 为了USER?
+    BASE_URL = '../../static/icon/'
+    file_url = '../../static/icon/base.png'
     if edit_form.validate_on_submit() and edit_form.submit.data:
 
         # usr is already current user
@@ -99,10 +102,14 @@ def user_edit(username):
             db.session.commit()
         else:
             flash('Password Error When Editing Password')
+    elif icon_form.validate_on_submit() and icon_form.submit.data:
+        filename = images.save(icon_form.icon.data)
+        file_url = BASE_URL + filename
 
     edit_form.username.data = username
 
-    return render_template('auth/register.html', form_tuple=(edit_form, pwd_form))
+    current_app.logger.debug(file_url)
+    return render_template('edit_user.html', form_tuple=(edit_form, pwd_form, icon_form), file_url=file_url)
 
 
 @main_blueprint.route('/task/edit', methods=['GET', 'POST'])

@@ -15,7 +15,8 @@ class Config:
     DATABASE_URI_FMT = 'mysql://root:{}@localhost:3306/deadblue'
     # SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue'.format(mysql_secret)
     FLASKY_ADMIN = os.environ.get('FLASK_ADMIN')
-    UPLOAD_FOLDER = './app/static/icon'
+    UPLOADED_IMAGES_DEST = './app/static/icon'
+    UPLOADED_IMAGES_UPLOADS = './app/static/icon'
 
     @staticmethod
     def init_app(app):

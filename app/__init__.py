@@ -3,11 +3,14 @@ from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from config import config_class
 from flask_login import LoginManager
+from flask_uploads import UploadSet, IMAGES, configure_uploads, patch_request_class
 
 
 bootstrap = Bootstrap()
 
 db = SQLAlchemy()
+
+images = UploadSet('images', IMAGES)
 
 login_manager = LoginManager()
 login_manager.session_protection = 'basic'
@@ -25,6 +28,9 @@ def create_app(config_name):
     bootstrap.init_app(app)
     db.init_app(app)
     login_manager.init_app(app)
+    configure_uploads(app, images)
+    # 限制大小
+    patch_request_class(app)
 
     from app.model import User
 
@@ -33,7 +39,9 @@ def create_app(config_name):
     app.register_blueprint(main_blueprint)
     from .auth import auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
-    app.logger.setLevel('INFO')
+
+    # 日志设定
+    app.logger.setLevel('DEBUG')
 
     # 把这个放到了最后
     # TODO: know how to adjust it

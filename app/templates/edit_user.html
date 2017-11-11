@@ -1,0 +1,57 @@
+{% extends "DeadBlueBase.html" %}
+{% import "bootstrap/wtf.html" as wtf %}
+{# 不需要写相对路径？？？ #}
+{% block content %}
+    {% block content_start %}
+        <h1 class="text-center">{% block content_name %}Edit Profile {% endblock %}</h1>
+    {% endblock %}
+
+
+
+    {% block render_forms %}
+        <div class="container">
+            {% if form_tuple %}
+                {% for form in form_tuple %}
+                    <div class="form-group">
+                        {{ wtf.quick_form(form) }}
+                    </div>
+                    <br />
+                {% endfor %}
+            {% elif form %}
+                    <div class="form-group">
+                        {{ wtf.quick_form(form) }}
+                    </div>
+            {% endif %}
+        </div>
+    {% endblock %}
+
+    {% block icon %}
+        <div class="container">
+            {% if file_url %}
+                <img src="{{ file_url }}">
+            {% endif %}
+        </div>
+    {% endblock %}
+
+    {% block register %}
+        <div class="container">
+            <p>
+                <div class="glyphicon-font">
+                    New user?<a href="{{ url_for('auth.register') }}"> Click here to register </a>
+                </div>
+            </p>
+        </div>
+    {% endblock %}
+
+    {% block flash %}
+        <div class="container-fluid">
+            {% for foo in get_flashed_messages() %}
+                <div class="alert-warning">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <div class="glyphicon-font">{{ foo }} </div>
+                </div>
+             {% endfor %}
+        </div>
+    {% endblock %}
+
+{% endblock %}
