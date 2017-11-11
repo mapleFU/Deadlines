@@ -15,12 +15,12 @@ class Config:
     DATABASE_URI_FMT = 'mysql://root:{}@localhost:3306/deadblue'
     # SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue'.format(mysql_secret)
     FLASKY_ADMIN = os.environ.get('FLASK_ADMIN')
+    UPLOAD_FOLDER = './app/static/icon'
 
     @staticmethod
     def init_app(app):
         # 用密码来更改
         app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URI_FMT'].format(app.config['SQLCODE'])
-
 
 
 class DevConfig(Config):

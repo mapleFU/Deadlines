@@ -32,6 +32,10 @@
                 <div class="task-author">
                     author: <a href="{{ url_for('main.user', username=task.author.username) }}">{{ task.author }}</a>
                 </div>
+
+                <div class="task-content">
+                    task: {{ task.content[:50] }}
+                </div>
             {% endfor %}
         {% endif %}
     </ul>

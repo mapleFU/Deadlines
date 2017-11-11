@@ -5,11 +5,23 @@
     {% block content_start %}
         <h1 class="text-center">{% block content_name %}Login {% endblock %}</h1>
     {% endblock %}
-    <div class="container">
-        <div class="form-group">
-            {{ wtf.quick_form(form) }}
+
+    {% block render_forms %}
+        <div class="container">
+            {% if form_tuple %}
+                {% for form in form_tuple %}
+                    <div class="form-group">
+                        {{ wtf.quick_form(form) }}
+                    </div>
+                    <br />
+                {% endfor %}
+            {% elif form %}
+                    <div class="form-group">
+                        {{ wtf.quick_form(form) }}
+                    </div>
+            {% endif %}
         </div>
-    </div>
+    {% endblock %}
 
     {% block register %}
         <div class="container">
