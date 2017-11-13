@@ -40,6 +40,8 @@ class User(db.Model, UserMixin):
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     # 是否上传头像
     icon_uploaded = db.Column(db.Boolean(), default=False)
+    # 头像的URL
+    icon_url = db.Column(db.String(64))
     # 发送的站内信
     sent_messages = db.relationship('Message', back_populates='sender',
                                     order_by='Message.sent', foreign_keys=[Message.sender_id],

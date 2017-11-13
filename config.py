@@ -12,11 +12,13 @@ class Config:
     # COMMIT_ON_TEARDOWN = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SQLALCHEMY_COMMIT_ON_TEAR_DOWN = True
-    DATABASE_URI_FMT = 'mysql://root:{}@localhost:3306/deadblue'
+    # DATABASE_URI_FMT = 'mysql://root:{}@localhost:3306/deadblue'
     # SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue'.format(mysql_secret)
     FLASKY_ADMIN = os.environ.get('FLASK_ADMIN')
-    UPLOADED_IMAGES_DEST = './app/static/icon'
-    UPLOADED_IMAGES_UPLOADS = './app/static/icon'
+    UPLOADED_IMAGES_DEST = os.path.abspath('./app/static/icon/')
+    UPLOADS_DEFAULT_DEST = os.path.abspath('./app/static/icon/')
+    # UPLOADED_IMAGES_UPLOADS = './app/static/icon/'
+    # UPLOAD_FOLDER = './app/static/icon'
 
     @staticmethod
     def init_app(app):

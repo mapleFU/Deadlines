@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
@@ -10,7 +12,7 @@ bootstrap = Bootstrap()
 
 db = SQLAlchemy()
 
-images = UploadSet('images', IMAGES)
+images = UploadSet('images', IMAGES, default_dest=os.path.abspath('./static/icon/'))
 
 login_manager = LoginManager()
 login_manager.session_protection = 'basic'
@@ -42,6 +44,8 @@ def create_app(config_name):
 
     # 日志设定
     app.logger.setLevel('DEBUG')
+
+    # app.logger.debug(config_name)
 
     # 把这个放到了最后
     # TODO: know how to adjust it

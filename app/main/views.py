@@ -1,8 +1,10 @@
+import os
+
 from . import main_blueprint
 from flask import render_template, abort, redirect, url_for, request, flash, current_app
 from flask_login import login_required, current_user
 from app.model import User, Task
-from .forms import *
+from .forms import images, IconForm, TaskForm, PasswordEditForm, ProfileEditForm
 from .. import db
 
 
@@ -15,6 +17,7 @@ def base2():
 @main_blueprint.route('/DeadBlue', methods=['GET', 'POST'])
 @main_blueprint.route('/deadblue', methods=['GET', 'POST'])
 def index():
+    current_app.logger.debug(current_app.config['SQLALCHEMY_DATABASE_URI'])
     form = TaskForm()
     if current_user.is_authenticated and form.validate_on_submit():
         tsk = Task(
@@ -73,7 +76,13 @@ def user_edit(username):
 
     # 为什么要两个.. 为了USER?
     BASE_URL = '../../static/icon/'
-    file_url = '../../static/icon/base.png'
+    # file_url = '../../static/icon/base.png'
+    if current_user.icon_uploaded:
+        # 已经上传头像
+        file_url = current_user.icon_url
+    else:
+        file_url = '../../static/icon/base.png'
+
     if edit_form.validate_on_submit() and edit_form.submit.data:
 
         # usr is already current user
@@ -103,12 +112,23 @@ def user_edit(username):
         else:
             flash('Password Error When Editing Password')
     elif icon_form.validate_on_submit() and icon_form.submit.data:
-        filename = images.save(icon_form.icon.data)
+        # current_app.logger.debug(current_user.id)
+
+        # , name=str(current_user.id), 似乎是类型指定有误
+        # current_app.logger.debug(images)
+        # current_app.logger.debug(images.default_dest)
+        # current_app.logger.debug('BASE: ' + os.path.abspath(BASE_URL))
+        # current_app.logger.debug('DEFAULT: ' + os.path.abspath(images.default_dest))
+
+        # 主要有文件名后缀的问题和folder对应URL的问题, 我日，不是？
+        filename = images.save(icon_form.icon.data, name=icon_form.icon.data.filename)
         file_url = BASE_URL + filename
+        current_user.icon_uploaded = True
+        current_user.icon_url = file_url
 
     edit_form.username.data = username
 
-    current_app.logger.debug(file_url)
+    current_app.logger.debug('FINAL: ' + os.path.abspath(file_url))
     return render_template('edit_user.html', form_tuple=(edit_form, pwd_form, icon_form), file_url=file_url)
 
 
@@ -118,8 +138,9 @@ def task_edit():
     form = TaskForm()
     if form.validate_on_submit():
         task = Task(
-            context=form.task_content.data,
-            ending=form.ending_time.data
+            content=form.task_content.data,
+            ending=form.ending_time.data,
+            author=current_user
         )
         db.session.add(task)
         db.session.commit()

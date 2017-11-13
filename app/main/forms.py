@@ -5,6 +5,7 @@ from wtforms.fields.html5 import DateTimeField, DateField
 from flask_wtf.file import FileField, FileAllowed, FileRequired
 from werkzeug.utils import secure_filename
 from flask_uploads import UploadSet, IMAGES
+from .. import images
 
 
 class TaskForm(FlaskForm):
@@ -36,9 +37,6 @@ class PasswordEditForm(FlaskForm):
     new_pwd2 = PasswordField('Confirm Password', validators=PWD_VALIDATORS)
 
     submit = SubmitField('Update Password')
-
-
-images = UploadSet('images', IMAGES)
 
 
 class IconForm(FlaskForm):

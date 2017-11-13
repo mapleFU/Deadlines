@@ -12,11 +12,12 @@ Flask + Bootstrap框架编写的显示DDL的应用
 8. 重置密码 (Done)
 9. 邮箱 + 令牌认证？
 ### DDL
-1. 发布Deadline
+1. 发布Deadline, 删除Deadline
 2. 编辑自己发布的Deadline
 3. 首页显示关注/所有的Deadline
 4. 为Deadline设置private public模式
 5. 邮件提醒
+6. Deadline 分类设置
 ### Message
 1. 站内信显示和阅读
 
