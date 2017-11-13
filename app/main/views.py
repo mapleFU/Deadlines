@@ -111,6 +111,7 @@ def user_edit(username):
             db.session.commit()
         else:
             flash('Password Error When Editing Password')
+        return redirect(url_for('.user_edit', username=username))
     elif icon_form.validate_on_submit() and icon_form.submit.data:
         # current_app.logger.debug(current_user.id)
 
@@ -123,8 +124,14 @@ def user_edit(username):
         # 主要有文件名后缀的问题和folder对应URL的问题, 我日，不是？
         filename = images.save(icon_form.icon.data, name=icon_form.icon.data.filename)
         file_url = BASE_URL + filename
+        if current_user.icon_uploaded:
+            old_icon = current_user.icon_url
+            os.remove(old_icon)
         current_user.icon_uploaded = True
         current_user.icon_url = file_url
+        db.session.add(current_user)
+        db.session.commit()
+        return redirect(url_for('.user_edit', username=username))
 
     edit_form.username.data = username
 
