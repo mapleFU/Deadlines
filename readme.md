@@ -6,11 +6,11 @@ Flask + Bootstrap框架编写的显示DDL的应用
 2. 用户管理 
 3. 用户详情 (Done)
 4. 设置自我信息 (Done)
-5. 上传头像与默认头像 
+5. 上传头像与默认头像 (Done) 
 6. 管理员等权限设置
 7. 关注其他用户 
 8. 重置密码 (Done)
-9. 邮箱 + 令牌认证？
+9. 删除之前的头像
 ### DDL
 1. 发布Deadline, 删除Deadline
 2. 编辑自己发布的Deadline
@@ -18,6 +18,7 @@ Flask + Bootstrap框架编写的显示DDL的应用
 4. 为Deadline设置private public模式
 5. 邮件提醒
 6. Deadline 分类设置
+7. 首页缓存
 ### Message
 1. 站内信显示和阅读
 

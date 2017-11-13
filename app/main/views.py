@@ -5,12 +5,41 @@ from flask import render_template, abort, redirect, url_for, request, flash, cur
 from flask_login import login_required, current_user
 from app.model import User, Task
 from .forms import images, IconForm, TaskForm, PasswordEditForm, ProfileEditForm
-from .. import db
+from .. import db, cache
 
 
 @main_blueprint.route('/base')
 def base2():
     return render_template('base.html')
+
+
+GET_INDEX_PAG = 'get_index_pag'
+
+
+@cache.memoize(100)
+def get_index_pag(page):
+    """
+    :param page: 页面的目录数
+    :return: 对应的缓存
+    注意，数据库查询不应该用缓存
+    """
+
+    return Task.query.order_by(Task.ending).paginate(
+        page, per_page=10, error_out=False
+    ).items
+
+
+@cache.cached(timeout=100, key_prefix='get_first_pag')
+def get_first_pag():
+    """
+    :param page:
+    :return:
+    """
+    pg1 = Task.query.order_by(Task.ending).paginate(
+        1, per_page=10, error_out=False
+    ).items
+    # current_app.logger.debug(type(rt1), rt1)
+    return pg1
 
 
 @main_blueprint.route('/', methods=['GET', 'POST'])
@@ -20,24 +49,28 @@ def index():
     current_app.logger.debug(current_app.config['SQLALCHEMY_DATABASE_URI'])
     form = TaskForm()
     if current_user.is_authenticated and form.validate_on_submit():
-        tsk = Task(
-            content=form.task_content.data,
-            ending=form.ending_time.data,
-            author=current_user
-        )
-
-        db.session.add(tsk)
-        db.session.commit()
+        # 把TASK更新抽象出来，封装成一个函数，触发这个函数会删除cache
+        Task.add_task(content=form.task_content.data, ending=form.ending_time.data,
+                      author=current_user, app=app)
+        # tsk = Task(
+        #     content=form.task_content.data,
+        #     ending=form.ending_time.data,
+        #     author=current_user
+        # )
+        #
+        # db.session.add(tsk)
+        # db.session.commit()
+        # cache.delete_memoized('get_index_pag')
         # maybe i should clear it?
         return redirect(url_for('.index'))
-    # attention
+    # attention 这里应该使用缓存
     page = request.args.get('page', 1, type=int)
     # paginate 分页
-    pag = Task.query.order_by(Task.ending).paginate(
-        page, per_page=10, error_out=False
-    )
-
-    tasks = pag.items
+    if page == 1:
+        pag = get_first_pag()
+    else:
+        pag = get_index_pag(page)
+    tasks = pag
     return render_template('index.html', tsks=tasks, form=form)
 
 
@@ -124,9 +157,9 @@ def user_edit(username):
         # 主要有文件名后缀的问题和folder对应URL的问题, 我日，不是？
         filename = images.save(icon_form.icon.data, name=icon_form.icon.data.filename)
         file_url = BASE_URL + filename
+        # TODO: figure how does file exists and how to delete it
         if current_user.icon_uploaded:
             old_icon = current_user.icon_url
-            os.remove(old_icon)
         current_user.icon_uploaded = True
         current_user.icon_url = file_url
         db.session.add(current_user)
@@ -134,8 +167,8 @@ def user_edit(username):
         return redirect(url_for('.user_edit', username=username))
 
     edit_form.username.data = username
-
-    current_app.logger.debug('FINAL: ' + os.path.abspath(file_url))
+    print(file_url)
+    current_app.logger.debug('FINAL: ' + file_url)
     return render_template('edit_user.html', form_tuple=(edit_form, pwd_form, icon_form), file_url=file_url)
 
 

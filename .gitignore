@@ -118,3 +118,5 @@ tests/tesk.py
 *.env
 
 instance/*
+
+*.png

@@ -6,6 +6,7 @@ from flask_sqlalchemy import SQLAlchemy
 from config import config_class
 from flask_login import LoginManager
 from flask_uploads import UploadSet, IMAGES, configure_uploads, patch_request_class
+from flask_cache import Cache
 
 
 bootstrap = Bootstrap()
@@ -13,6 +14,8 @@ bootstrap = Bootstrap()
 db = SQLAlchemy()
 
 images = UploadSet('images', IMAGES, default_dest=os.path.abspath('./static/icon/'))
+
+cache = Cache(config={'CACHE_TYPE': 'simple'})
 
 login_manager = LoginManager()
 login_manager.session_protection = 'basic'
@@ -33,6 +36,8 @@ def create_app(config_name):
     configure_uploads(app, images)
     # 限制大小
     patch_request_class(app)
+
+    cache.init_app(app)
 
     from app.model import User
 

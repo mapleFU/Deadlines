@@ -1,5 +1,5 @@
 # 可以考虑把generate_fake变成一个函数
-from . import db
+from . import db, cache
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_moment import datetime
@@ -118,6 +118,17 @@ class Task(db.Model):
     # mother_fuck = db.Column(db.String(64))
     # lazy = 'dynamic', figure out why
     # 第一个表示User类的tablename -> user, 所以并非User
+
+    @staticmethod
+    def add_task(content, ending, author, app):
+        """
+        :return:
+        """
+        with app.app_context():
+            tsk = Task(content=content, ending=ending, author=author)
+            db.session.add(tsk)
+            db.session.commit()
+            cache.delete('index_pag')
 
     # TODO: FINISH THIS AND TEST THIS
     def count_remains(self):
