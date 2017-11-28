@@ -35,7 +35,7 @@ class User(db.Model, UserMixin):
 
     password_hash = db.Column(db.String(128))
     # task_id = db.Column(db.INTEGER, db.ForeignKey('Tasks.id'))
-    tasks = db.relationship('Task', backref='author', lazy='dynamic')
+    tasks = db.relationship('Task', backref='author', lazy='joined')
     # task_id = db.relationship(db.Integer, db.ForeignKey('task.id'))
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     # 是否上传头像
@@ -45,11 +45,11 @@ class User(db.Model, UserMixin):
     # 发送的站内信
     sent_messages = db.relationship('Message', back_populates='sender',
                                     order_by='Message.sent', foreign_keys=[Message.sender_id],
-                                    lazy='dynamic')
+                            )
     # 接受的站内信
     recv_messages = db.relationship('Message', back_populates='receiver',
                                     order_by='Message.sent', foreign_keys=[Message.receiver_id],
-                                    lazy='dynamic')
+                            )
 
     def __init__(self, username, password, email):
         self.email = email
@@ -59,7 +59,7 @@ class User(db.Model, UserMixin):
     # tasks = db.relationship(
     #     'tasks',
     #     backref='user',
-    #     lazy='dynamic',
+    #   ,
     # )
 
     @property
@@ -113,7 +113,7 @@ class Task(db.Model):
     content = db.Column(db.Text)
     tag = db.Column(db.String(40), index=True) # 任务标签
     # not user
-    # user = db.relationship('User', backref='tasks', lazy='dynamic')
+    # user = db.relationship('User', backref='tasks')
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
     # mother_fuck = db.Column(db.String(64))
     # lazy = 'dynamic', figure out why

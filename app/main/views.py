@@ -6,6 +6,7 @@ from flask_login import login_required, current_user
 from app.model import User, Task
 from .forms import images, IconForm, TaskForm, PasswordEditForm, ProfileEditForm
 from .. import db, cache
+from sqlalchemy.orm import joinedload, loading
 
 
 @main_blueprint.route('/base')
@@ -24,7 +25,7 @@ def get_index_pag(page):
     注意，数据库查询不应该用缓存
     """
 
-    return Task.query.order_by(Task.ending).paginate(
+    return db.session.query(Task).option(joinedload(Task.author)).order_by(Task.ending).paginate(
         page, per_page=10, error_out=False
     ).items
 
@@ -32,14 +33,21 @@ def get_index_pag(page):
 @cache.cached(timeout=100, key_prefix='get_first_pag')
 def get_first_pag():
     """
-    :param page:
-    :return:
+    :param page: 查询的页面数
+    :return:    返回查询的页面
     """
-    pg1 = Task.query.order_by(Task.ending).paginate(
+    pg1 = db.session.query(Task).order_by(Task.ending).paginate(
         1, per_page=10, error_out=False
     ).items
+    q_tsk = db.session.query(Task)
+    ret = q_tsk.merge_result(pg1)
+    q_usr = db.session.query(User)
+    # FIX IT, 得出的查询的对象需要绑定到缺失对象的 SESSION（对应的QUERY上）
+    usr = q_usr.merge_result(tsk.author for tsk in ret)
+    # db.session.query.merge_result()
+    # print(pg1)
     # current_app.logger.debug(type(rt1), rt1)
-    return pg1
+    return ret
 
 
 @main_blueprint.route('/', methods=['GET', 'POST'])
@@ -71,6 +79,10 @@ def index():
     else:
         pag = get_index_pag(page)
     tasks = pag
+    # author = pag[0].author
+    # print('fuck you {}'.format(author))
+    # TODO:搞清楚tmd 缓存关系
+    # print(tasks)
     return render_template('index.html', tsks=tasks, form=form)
 
 
@@ -167,8 +179,9 @@ def user_edit(username):
         return redirect(url_for('.user_edit', username=username))
 
     edit_form.username.data = username
-    print(file_url)
-    current_app.logger.debug('FINAL: ' + file_url)
+    # TODO: fix it
+    # print(file_url)
+    # current_app.logger.debug('FINAL: ' + file_url)
     return render_template('edit_user.html', form_tuple=(edit_form, pwd_form, icon_form), file_url=file_url)
 
 

@@ -19,8 +19,12 @@ Flask + Bootstrap框架编写的显示DDL的应用
 5. 邮件提醒
 6. Deadline 分类设置
 7. 首页缓存
+8. DDL 分类
 ### Message
 1. 站内信显示和阅读
+
+### Query
+1. 对信息进行咨询
 
 ## Quickstart
 需要在instance配置环境变量SQLCODE, FLASK_ADMIN, SECRET_KEY, FLASK_CONFIG
