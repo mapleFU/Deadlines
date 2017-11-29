@@ -39,15 +39,15 @@ def get_first_pag():
     pg1 = db.session.query(Task).order_by(Task.ending).paginate(
         1, per_page=10, error_out=False
     ).items
-    q_tsk = db.session.query(Task)
-    ret = q_tsk.merge_result(pg1)
+    # record
+    # q_tsk = db.session.query(Task)
+    # q_tsk.merge_result(pg1)
     q_usr = db.session.query(User)
     # FIX IT, 得出的查询的对象需要绑定到缺失对象的 SESSION（对应的QUERY上）
-    usr = q_usr.merge_result(tsk.author for tsk in ret)
+    q_usr.merge_result(tsk.author for tsk in pg1)
     # db.session.query.merge_result()
-    # print(pg1)
     # current_app.logger.debug(type(rt1), rt1)
-    return ret
+    return pg1
 
 
 @main_blueprint.route('/', methods=['GET', 'POST'])
@@ -59,7 +59,7 @@ def index():
     if current_user.is_authenticated and form.validate_on_submit():
         # 把TASK更新抽象出来，封装成一个函数，触发这个函数会删除cache
         Task.add_task(content=form.task_content.data, ending=form.ending_time.data,
-                      author=current_user, app=app)
+                      author=current_user, app=current_app)
         # tsk = Task(
         #     content=form.task_content.data,
         #     ending=form.ending_time.data,
@@ -120,13 +120,15 @@ def user_edit(username):
     icon_form = IconForm()
 
     # 为什么要两个.. 为了USER?
-    BASE_URL = '../../static/icon/'
+
+    # 这个URL 是相对在页面上的 URL
+    BASE_URL = '/static/icon/'
     # file_url = '../../static/icon/base.png'
     if current_user.icon_uploaded:
         # 已经上传头像
         file_url = current_user.icon_url
     else:
-        file_url = '../../static/icon/base.png'
+        file_url = '/static/icon/base.png'
 
     if edit_form.validate_on_submit() and edit_form.submit.data:
 
@@ -139,9 +141,7 @@ def user_edit(username):
             else:
                 flash('User with name {wanna_set} already existed.'.format(wanna_set=edit_form.username.data))
         else:
-
             username = edit_form.username.data
-            print('username: {}'.format(username))
             # usr.username = username
             current_user.username = username
             db.session.add(current_user)
@@ -168,6 +168,15 @@ def user_edit(username):
 
         # 主要有文件名后缀的问题和folder对应URL的问题, 我日，不是？
         filename = images.save(icon_form.icon.data, name=icon_form.icon.data.filename)
+
+        # 把旧的放进队列, 等待删除
+        try:
+            app_url = current_app.config['UPLOADED_IMAGES_DEST'] + '/' + current_user.icon_url.lstrip(BASE_URL)
+            print('remove' + app_url)
+            os.remove(app_url)
+        except FileNotFoundError:
+            print('heyhey')
+
         file_url = BASE_URL + filename
         # TODO: figure how does file exists and how to delete it
         if current_user.icon_uploaded:
