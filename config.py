@@ -1,5 +1,4 @@
 import os
-from random import randint
 
 basedir = os.path.abspath(os.path.abspath(__file__))
 # TODO: find another way to do it
@@ -7,6 +6,7 @@ mysql_secret = os.environ.get('SQLCODE')
 
 
 class Config:
+    CELERY_BROKER_URL = 'amqp://guest:guest@localhost:5672//'
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'fuck you leather man'
     # 把COMMIT_ON_TEAR_DOWN 注释掉
     # COMMIT_ON_TEARDOWN = True

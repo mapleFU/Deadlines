@@ -6,6 +6,8 @@ from app.model import User, Task
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager, Shell
 from flask_moment import Moment
+
+from app.celery_cfg import make_celery
 # from flask_admin import Admin
 
 
@@ -16,6 +18,23 @@ manager = Manager(app)
 migrate = Migrate(app, db)
 migrate.init_app(app, db)
 moment = Moment(app)
+celery = make_celery(app)
+
+
+@celery.task
+def send_mail(text, to):
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.header import Header
+
+    msg = MIMEText('Hello world')
+    msg['Subject'] = text
+    msg['From'] = app.config['FLASK_ADMIN']
+    msg['To'] = to
+
+    smtp = smtplib.SMTP_SSL('smtp.qq.com', 465, timeout=120)
+    smtp.login(msg['From'], app.config['MAIL_CODE'])
+    smtp.sendmail(msg['From'], msg['To'], msg.as_string())
 # admin = Admin(app, name='dead_list', template_mode='bootstrap3')
 
 
