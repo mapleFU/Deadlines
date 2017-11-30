@@ -3,11 +3,12 @@ import os
 from flask import Flask
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
-from config import config_class
+from config import config_class, Config
 from flask_login import LoginManager
 from flask_uploads import UploadSet, IMAGES, configure_uploads, patch_request_class
 from flask_caching import Cache
 
+from celery import Celery
 
 
 bootstrap = Bootstrap()
@@ -21,6 +22,8 @@ cache = Cache(config={'CACHE_TYPE': 'simple'})
 login_manager = LoginManager()
 login_manager.session_protection = 'basic'
 login_manager.login_view = 'auth.login'
+
+celery = Celery(__name__, broker=Config.CELERY_BROKER_URL)
 
 
 def create_app(config_name):
@@ -46,6 +49,7 @@ def create_app(config_name):
     #     # CELERY_RESULT_BACKEND='redis://localhost:6379/1'
     # )
     # celery = make_celery(app)
+    app.config.update(celery.conf)
 
     from app.model import User
 

@@ -1,8 +1,7 @@
-from celery import Celery, Task
+from celery import Celery
 
 
 def make_celery(app):
-    print(app.config)
     celery = Celery(app.name, broker=app.config['CELERY_BROKER_URL'])
-    celery.conf.update(app.config)
+    app.config.update(celery.conf)
     return celery

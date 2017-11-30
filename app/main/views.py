@@ -8,6 +8,7 @@ from .forms import images, IconForm, TaskForm, PasswordEditForm, ProfileEditForm
 from .. import db, cache
 from sqlalchemy.orm import joinedload, loading
 
+from .task_queue import remove_icon
 
 @main_blueprint.route('/base')
 def base2():
@@ -173,7 +174,8 @@ def user_edit(username):
         try:
             app_url = current_app.config['UPLOADED_IMAGES_DEST'] + '/' + current_user.icon_url.lstrip(BASE_URL)
             print('remove' + app_url)
-            os.remove(app_url)
+            remove_icon.delay(app_url)
+            # os.remove(app_url)
         except FileNotFoundError:
             print('heyhey')
 
