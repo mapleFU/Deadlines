@@ -10,6 +10,7 @@ from sqlalchemy.orm import joinedload, loading
 
 from .task_queue import remove_icon
 
+
 @main_blueprint.route('/base')
 def base2():
     return render_template('base.html')
@@ -170,29 +171,21 @@ def user_edit(username):
         # 主要有文件名后缀的问题和folder对应URL的问题, 我日，不是？
         filename = images.save(icon_form.icon.data, name=icon_form.icon.data.filename)
 
-        # 把旧的放进队列, 等待删除
-        try:
-            app_url = current_app.config['UPLOADED_IMAGES_DEST'] + '/' + current_user.icon_url.lstrip(BASE_URL)
-            print('remove' + app_url)
-            remove_icon.delay(app_url)
-            # os.remove(app_url)
-        except FileNotFoundError:
-            print('heyhey')
+        app_url = current_app.config['UPLOADED_IMAGES_DEST'] + '/' + current_user.icon_url.lstrip(BASE_URL)
 
         file_url = BASE_URL + filename
-        # TODO: figure how does file exists and how to delete it
         if current_user.icon_uploaded:
             old_icon = current_user.icon_url
         current_user.icon_uploaded = True
         current_user.icon_url = file_url
         db.session.add(current_user)
         db.session.commit()
+        # 把旧的放进队列, 等待删除
+        # TODO: 在任务队列中处理NOT FOUND 的逻辑
+        remove_icon.delay(app_url)
         return redirect(url_for('.user_edit', username=username))
 
     edit_form.username.data = username
-    # TODO: fix it
-    # print(file_url)
-    # current_app.logger.debug('FINAL: ' + file_url)
     return render_template('edit_user.html', form_tuple=(edit_form, pwd_form, icon_form), file_url=file_url)
 
 

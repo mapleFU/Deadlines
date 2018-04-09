@@ -10,7 +10,7 @@ Flask + Bootstrap框架编写的显示DDL的应用
 6. 管理员等权限设置
 7. 关注其他用户 
 8. 重置密码 (Done)
-9. 删除之前的头像
+9. 删除之前的头像(Done)
 ### DDL
 1. 发布Deadline, 删除Deadline
 2. 编辑自己发布的Deadline
@@ -18,7 +18,7 @@ Flask + Bootstrap框架编写的显示DDL的应用
 4. 为Deadline设置private public模式
 5. 邮件提醒
 6. Deadline 分类设置
-7. 首页缓存
+7. 首页缓存 (DONE)
 8. DDL 分类
 ### Message
 1. 站内信显示和阅读
@@ -30,6 +30,10 @@ Flask + Bootstrap框架编写的显示DDL的应用
 需要在instance配置环境变量SQLCODE, FLASK_ADMIN, SECRET_KEY, FLASK_CONFIG
 
 在目录下运行
+`sudo rabbitmq-server`开启 rabbitmq 进程
+
+`celery worker -A celery_worker.celery --loglevel=info` 来开启CELERY进程
+
 `python manage.py runserver --host 0.0.0.0`
 即可以启动
 
