@@ -28,8 +28,8 @@ class Config:
 
 class DevConfig(Config):
     DEBUG = True
+    # DATABASE_URI_FMT = 'postgresql://mwish:{}@localhost:5432/deadblue_dev'
     DATABASE_URI_FMT = 'mysql://root:{}@localhost:3306/deadblue_dev'
-    # SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue_dev'.format(mysql_secret)
     # SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_COMMIT_ON_TEAR_DOWN = True

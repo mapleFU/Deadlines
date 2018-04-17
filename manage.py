@@ -6,7 +6,7 @@ from app.model import User, Task
 from flask_migrate import Migrate, MigrateCommand
 from flask_script import Manager, Shell
 from flask_moment import Moment
-
+from flask_restful import Api
 from app.celery_cfg import make_celery
 # from flask_admin import Admin
 

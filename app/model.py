@@ -3,6 +3,7 @@ from . import db, cache
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_moment import datetime
+
 from datetime import date
 
 
@@ -44,23 +45,15 @@ class User(db.Model, UserMixin):
     icon_url = db.Column(db.String(64))
     # 发送的站内信
     sent_messages = db.relationship('Message', back_populates='sender',
-                                    order_by='Message.sent', foreign_keys=[Message.sender_id],
-                            )
+                                    order_by='Message.sent', foreign_keys=[Message.sender_id],)
     # 接受的站内信
     recv_messages = db.relationship('Message', back_populates='receiver',
-                                    order_by='Message.sent', foreign_keys=[Message.receiver_id],
-                            )
+                                    order_by='Message.sent', foreign_keys=[Message.receiver_id],)
 
     def __init__(self, username, password, email):
         self.email = email
         self.username = username
         self.password = password
-
-    # tasks = db.relationship(
-    #     'tasks',
-    #     backref='user',
-    #   ,
-    # )
 
     @property
     def password(self):
@@ -99,6 +92,39 @@ class User(db.Model, UserMixin):
                 db.session.commit()
             except IntegrityError:
                 db.session.rollback()
+
+
+class Teacher(db.Model):
+    """
+    学院的老师
+    与COURSE可能是多对多关系(一般是一门课一老师)
+    冗余存储？那是啥？
+    """
+    __tablename__ = 'teacher'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(64))
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
+    course = db.relationship("Course", back_populates="teachers")
+
+
+class Course(db.Model):
+    """
+    需要进行的课程
+    与老师可能有一对多的关系
+    暂时没有有 "课时" 的属性，但是搜索出来是和他关联的
+    实时"提供导入课程表"？
+    历史信息用"老师名称"们来维护
+    """
+    __tablename__ = 'course'
+
+    # 课程号（学校课号不可信...
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    # 学校课程号
+    course_id = db.Column(db.Integer)
+    # 课程名
+    course_name = db.Column(db.String(128))
+    # 老师，有可能有多张表...
+    teachers = db.relationship("Teacher", back_populates="course")
 
 
 class Task(db.Model):
