@@ -127,23 +127,31 @@ class Course(db.Model):
     teachers = db.relationship("Teacher", back_populates="course")
 
 
-class Task(db.Model):
+class CommentOnCourse(db.Model):
     """
-    需要处理的任务对象
+    对课程的评论
+    打分(五星制) + 文本
+    跟课程、用户是一对一的关系
     """
-    __tablename__ = 'tasks'
+    __tablename__ = 'commentoncourse'
+    id = db.Column(db.Integer, primary_key=True)
+
+
+class Deadline(db.Model):
+    """
+    需要处理的deadline对象
+    """
+    __tablename__ = 'deadline'
 
     id = db.Column(db.INTEGER, primary_key=True)
 
     ending = db.Column(db.DateTime)
+    # deadline的描述文本
     content = db.Column(db.Text)
-    tag = db.Column(db.String(40), index=True) # 任务标签
+    # 任务标签
+    tag = db.Column(db.String(40), index=True, nullable=True)
     # not user
-    # user = db.relationship('User', backref='tasks')
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    # mother_fuck = db.Column(db.String(64))
-    # lazy = 'dynamic', figure out why
-    # 第一个表示User类的tablename -> user, 所以并非User
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
 
     @staticmethod
     def add_task(content, ending, author, app):
@@ -164,7 +172,7 @@ class Task(db.Model):
         return datetime.utcnow() - self.ending
 
     def __repr__(self):
-        return '<task: User:{}, text:{}, end:{}>'.format(
+        return '<deadline: User:{}, text:{}, end:{}>'.format(
             self.user_id,
             self.content[:10],
             self.ending

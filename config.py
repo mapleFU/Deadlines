@@ -23,28 +23,27 @@ class Config:
     @staticmethod
     def init_app(app):
         # 用密码来更改
-        app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URI_FMT'].format(app.config['SQLCODE'])
+        app.config['SQLALCHEMY_DATABASE_URI'] = app.config['DATABASE_URI_FMT'].format(
+            user=app.config['DB_USER'], pwd=app.config['SQLCODE'], port=app.config['DB_PORT'])
 
 
 class DevConfig(Config):
     DEBUG = True
-    # DATABASE_URI_FMT = 'postgresql://mwish:{}@localhost:5432/deadblue_dev'
-    DATABASE_URI_FMT = 'mysql://root:{}@localhost:3306/deadblue_dev'
+    DATABASE_URI_FMT = 'postgresql://{user}:{pwd}@localhost:{port}/deadblue_dev'
+    # DATABASE_URI_FMT = 'mysql://root:{}@localhost:3306/deadblue_dev'
     # SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_TRACK_MODIFICATIONS = True
     SQLALCHEMY_COMMIT_ON_TEAR_DOWN = True
 
 
 class ProductionConfig(Config):
-    DATABASE_URI_FMT = 'mysql://root:{}@localhost:3306/deadblue'
-    # SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue'.format(mysql_secret)
+    DATABASE_URI_FMT = 'postgresql://{user}:{pwd}@localhost:{port}/deadblue_dev'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class TestConfig(Config):
     TESTING = True
-    DATABASE_URI_FMT = 'mysql://root:{}@localhost:3306/deadblue_test'
-    # SQLALCHEMY_DATABASE_URI = 'mysql://root:{}@localhost:3306/deadblue_test'.format(mysql_secret)
+    DATABASE_URI_FMT = 'postgresql://{user}:{pwd}@localhost:{port}/deadblue_test'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 

@@ -3,7 +3,7 @@ import os
 from . import main_blueprint
 from flask import render_template, abort, redirect, url_for, request, flash, current_app
 from flask_login import login_required, current_user
-from app.model import User, Task
+from app.model import User, Deadline
 from .forms import images, IconForm, TaskForm, PasswordEditForm, ProfileEditForm
 from .. import db, cache
 from sqlalchemy.orm import joinedload, loading
@@ -27,7 +27,7 @@ def get_index_pag(page):
     注意，数据库查询不应该用缓存
     """
 
-    return db.session.query(Task).option(joinedload(Task.author)).order_by(Task.ending).paginate(
+    return db.session.query(Deadline).option(joinedload(Deadline.author)).order_by(Deadline.ending).paginate(
         page, per_page=10, error_out=False
     ).items
 
@@ -38,11 +38,11 @@ def get_first_pag():
     :param page: 查询的页面数
     :return:    返回查询的页面
     """
-    pg1 = db.session.query(Task).order_by(Task.ending).paginate(
+    pg1 = db.session.query(Deadline).order_by(Deadline.ending).paginate(
         1, per_page=10, error_out=False
     ).items
     # record
-    # q_tsk = db.session.query(Task)
+    # q_tsk = db.session.query(Deadline)
     # q_tsk.merge_result(pg1)
     q_usr = db.session.query(User)
     # FIX IT, 得出的查询的对象需要绑定到缺失对象的 SESSION（对应的QUERY上）
@@ -60,9 +60,9 @@ def index():
     form = TaskForm()
     if current_user.is_authenticated and form.validate_on_submit():
         # 把TASK更新抽象出来，封装成一个函数，触发这个函数会删除cache
-        Task.add_task(content=form.task_content.data, ending=form.ending_time.data,
+        Deadline.add_task(content=form.task_content.data, ending=form.ending_time.data,
                       author=current_user, app=current_app)
-        # tsk = Task(
+        # tsk = Deadline(
         #     content=form.task_content.data,
         #     ending=form.ending_time.data,
         #     author=current_user
@@ -194,7 +194,7 @@ def user_edit(username):
 def task_edit():
     form = TaskForm()
     if form.validate_on_submit():
-        task = Task(
+        task = Deadline(
             content=form.task_content.data,
             ending=form.ending_time.data,
             author=current_user
