@@ -125,7 +125,6 @@ def user_edit(username):
 
     # 这个URL 是相对在页面上的 URL
     BASE_URL = '/static/icon/'
-    # file_url = '../../static/icon/base.png'
     if current_user.icon_uploaded:
         # 已经上传头像
         file_url = current_user.icon_url

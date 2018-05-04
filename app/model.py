@@ -3,8 +3,12 @@ from . import db, cache
 from flask_login import UserMixin, AnonymousUserMixin, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_moment import datetime
+from flask import current_app
+
+from itsdangerous import TimedJSONWebSignatureSerializer, BadSignature, SignatureExpired
 
 from datetime import date
+from enum import Enum
 
 
 class Message(db.Model):
@@ -35,8 +39,8 @@ class User(db.Model, UserMixin):
     id = db.Column(db.INTEGER, primary_key=True)
 
     password_hash = db.Column(db.String(128))
-    # task_id = db.Column(db.INTEGER, db.ForeignKey('Tasks.id'))
-    tasks = db.relationship('Task', backref='author', lazy='joined')
+    # task_id = db.Column(db.INTEGER, db.ForeignKey('Deadlines.id'))
+    tasks = db.relationship('Deadline', backref='author', lazy='joined')
     # task_id = db.relationship(db.Integer, db.ForeignKey('task.id'))
     member_since = db.Column(db.DateTime(), default=datetime.utcnow)
     # 是否上传头像
@@ -69,6 +73,22 @@ class User(db.Model, UserMixin):
 
     def __repr__(self):
         return '<User {}>'.format(self.username)
+
+    def generate_token(self, expiration=600):
+        s = TimedJSONWebSignatureSerializer(current_app.config['secret'], expires_in=expiration)
+        return s.dumps({"id": self.id})
+
+    @staticmethod
+    def verify_token(token):
+        s = TimedJSONWebSignatureSerializer(current_app.config['SECRET_KEY'])
+        try:
+            data = s.loads(token)
+        except SignatureExpired:
+            return None  # valid token, but expired
+        except BadSignature:
+            return None  # invalid token
+        user = User.query.get(data['id'])
+        return user
 
     @staticmethod
     def generate_fake(count=100):
@@ -135,6 +155,14 @@ class CommentOnCourse(db.Model):
     """
     __tablename__ = 'commentoncourse'
     id = db.Column(db.Integer, primary_key=True)
+    text = db.Column(db.Text)
+    stars = db.Column(db.Integer)
+    course_id = db.Column(db.Integer, db.ForeignKey('course.id'))
+    student_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    def __init__(self, text=None, stars=None):
+        self.text = text
+        self.stars = stars
 
 
 class Deadline(db.Model):
@@ -159,7 +187,7 @@ class Deadline(db.Model):
         :return:
         """
         with app.app_context():
-            tsk = Task(content=content, ending=ending, author=author)
+            tsk = Deadline(content=content, ending=ending, author=author)
             db.session.add(tsk)
             db.session.commit()
             cache.delete('index_pag')
@@ -207,7 +235,7 @@ class Deadline(db.Model):
 
         for i in range(count):
             u = User.query.offset(randint(0, user_num-1)).first()
-            tsk = Task(
+            tsk = Deadline(
                 content=forgery_py.lorem_ipsum.sentence(),
                 author=u,
                 ending=start_date

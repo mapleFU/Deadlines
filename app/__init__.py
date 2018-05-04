@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask
+from flask import Flask, g
 from flask_bootstrap import Bootstrap
 from flask_sqlalchemy import SQLAlchemy
 from config import config_class, Config
@@ -9,7 +9,6 @@ from flask_uploads import UploadSet, IMAGES, configure_uploads, patch_request_cl
 from flask_caching import Cache
 
 from celery import Celery
-
 
 bootstrap = Bootstrap()
 
@@ -22,6 +21,7 @@ cache = Cache(config={'CACHE_TYPE': 'simple'})
 login_manager = LoginManager()
 login_manager.session_protection = 'basic'
 login_manager.login_view = 'auth.login'
+
 
 celery = Celery(__name__, broker=Config.CELERY_BROKER_URL)
 
@@ -58,6 +58,8 @@ def create_app(config_name):
     app.register_blueprint(main_blueprint)
     from .auth import auth_blueprint
     app.register_blueprint(auth_blueprint, url_prefix='/auth')
+    from .api_1_0 import api_blueprint
+    app.register_blueprint(api_blueprint, url_prefix='/api')
 
     # 日志设定
     app.logger.setLevel('DEBUG')

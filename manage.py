@@ -18,7 +18,7 @@ manager = Manager(app)
 migrate = Migrate(app, db)
 migrate.init_app(app, db)
 moment = Moment(app)
-
+celery = make_celery(app)
 
 # admin = Admin(app, name='dead_list', template_mode='bootstrap3')
 
